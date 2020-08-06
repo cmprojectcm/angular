@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AutocompletePlacesService } from '../autocomplete-places.service';
 
 @Component({
   selector: 'app-map-component',
@@ -7,7 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MapComponent implements OnInit {
   mapComponent = 'mappppp';
-  constructor() {}
+  places
+  constructor(service: AutocompletePlacesService) {
+    // service.
+    this.places = service.getPlaces()
+  }
 
   ngOnInit(): void {}
 }
