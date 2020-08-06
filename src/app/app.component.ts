@@ -6,5 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  lat = 51.678418;
+  lng = 7.809007;
   title = 'place-finder-webApp';
 }
