@@ -30,6 +30,7 @@ export class MapComponent implements OnInit {
   }
   
 
+  
   public handleAddressChange(address: any) { 
   //setting address from API to local variable 
     console.log('address', address)
