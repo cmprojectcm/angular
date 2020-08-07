@@ -5,18 +5,27 @@ import { AutocompletePlacesService } from './autocomplete-places.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map-component/map-component.component';
-import { AgmCoreModule } from '@agm/core';
+import { AgmCoreModule,  } from '@agm/core';
+import { GoogleMapsModule } from '@angular/google-maps'
 import { GooglePlaceModule } from "ngx-google-places-autocomplete";
+// import {NgxGooglePlacesAutocompleteModule} from "@codious/ngx-google-places-autocomplete";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [AppComponent, MapComponent],
-  imports: [BrowserModule,
+  imports: [
+    BrowserModule,
     AppRoutingModule,
+    FormsModule,
+    GoogleMapsModule,
+    // ReactiveFormsModule,
     GooglePlaceModule,
     AgmCoreModule.forRoot({
       apiKey: "AIzaSyDE3SEIuN7skmbBHeElgl8zmhCw3C6pcSI",
       libraries: ['places']
-  })],
+    }),
+  ],
   providers: [AutocompletePlacesService],
   bootstrap: [AppComponent],
 })

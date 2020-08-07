@@ -1,22 +1,11 @@
-<div className='mapp'>
+<p>Heloooooooo</p>
 
-  <div class="container"> 
-    <h2>Google Places Autocomplete</h2> 
-    <input 
-    ngx-google-places-autocomplete 
-    (onAddressChange)="handleAddressChange($event)"
-    />
-  {{ formattedaddress }} 
-  </div> 
+<h2>Google Places Autocomplete</h2> 
 
+  <input 
+  ngx-google-places-autocomplete 
+  [options]='options' 
+  (onAddressChange)="handleAddressChange($event)"/>
   <agm-map [latitude]="lat" [longitude]="lng">
     <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
-  </agm-map>
-  <!-- <h5>Address: {{address}}</h5> -->
-  <div>Latitude: {{lat}}</div>
-  <div>Longitude: {{lng}}</div>
-
-
-  
-
-</div>
+  </agm-map>s
