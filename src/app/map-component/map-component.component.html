@@ -1,11 +1,42 @@
-<p>Heloooooooo</p>
+<div class="infoContainer">
+  <div class="selectCategory">
+    <select [(ngModel)]="selectedCategoryType" (ngModelChange)="handleSelectCategory($event)">
+      <option [value]="opt" *ngFor="let opt of categoryTypes">
+        {{opt}}
+      </option>
+    </select>
+  </div>
 
-<h2>Google Places Autocomplete</h2> 
+  <div class="selectCountry">
+    <select [(ngModel)]="selectedCountry" (ngModelChange)="handleSelectCountry($event)">
+      <option [value]="opt.name" *ngFor="let opt of countryList">
+        {{opt.name}}
+      </option>
+    </select>
+  </div>
 
-  <input 
-  ngx-google-places-autocomplete 
-  [options]='options' 
-  (onAddressChange)="handleAddressChange($event)"/>
+  <div class="autocompleteInput">
+
+    <!-- 
+    <input ngx-google-places-autocomplete [options]="options" (keyup)="test($event)"
+      (onAddressChange)="handleAddressChange($event)" /> -->
+
+    <div class="form-group">
+      <label for="place">Search</label>
+      <input type="text" id="place" #search [formControl]="searchControl" (change)="handleAddressChange($event)"
+        autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+<div class="mapContainer">
   <agm-map [latitude]="lat" [longitude]="lng">
     <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
-  </agm-map>s
+  </agm-map>
+</div>
