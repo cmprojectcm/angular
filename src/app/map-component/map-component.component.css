@@ -12,9 +12,33 @@
 
 }
 
+#mapContainer {
+  height: 800px;
+  width: 800px;
+}
+
+
 .selectCategory {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
+
+.selectCountry {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  /* flex: 0; */
+  display: flex;
+  flex-direction: column;
+}
+
+/* .searchInput {
+  flex: 1;
+} */
 
 agm-map {
   height: 800px;

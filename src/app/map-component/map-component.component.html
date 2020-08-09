@@ -1,15 +1,17 @@
 <div class="infoContainer">
   <div class="selectCategory">
+    <label for="place">Category</label>
     <select [(ngModel)]="selectedCategoryType" (ngModelChange)="handleSelectCategory($event)">
-      <option [value]="opt" *ngFor="let opt of categoryTypes">
-        {{opt}}
+      <option [value]="opt.id" *ngFor="let opt of categoryTypes">
+        {{opt.value}}
       </option>
     </select>
   </div>
 
   <div class="selectCountry">
+    <label for="place">Country</label>
     <select [(ngModel)]="selectedCountry" (ngModelChange)="handleSelectCountry($event)">
-      <option [value]="opt.name" *ngFor="let opt of countryList">
+      <option [value]="opt.code" *ngFor="let opt of countryList">
         {{opt.name}}
       </option>
     </select>
@@ -20,23 +22,31 @@
     <!-- 
     <input ngx-google-places-autocomplete [options]="options" (keyup)="test($event)"
       (onAddressChange)="handleAddressChange($event)" /> -->
-
+    <!-- (keyup)="onKey($event)"> -->
     <div class="form-group">
       <label for="place">Search</label>
-      <input type="text" id="place" #search [formControl]="searchControl" (change)="handleAddressChange($event)"
-        autocomplete="off" autocapitalize="off" spellcheck="false">
+      <!-- <div class="searchInput"> -->
+      <input type="text" id="place" #search [formControl]="searchControl" autocomplete="off" autocapitalize="off"
+        spellcheck="false">
+      <!-- </div> -->
     </div>
 
   </div>
 
 </div>
 
+<!-- <div id="mapContainer"> -->
+<agm-map #mapElement id="agmID" [latitude]="lat" [longitude]="lng">
+  <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
 
-
-
-
-<div class="mapContainer">
-  <agm-map [latitude]="lat" [longitude]="lng">
-    <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
-  </agm-map>
-</div>
+  <!-- <agm-marker *ngFor="let marker of markers" [latitude]="marker.placeResult.geometry.location.lat()"
+    [longitude]="marker.placeResult.geometry.location.lng()">
+  </agm-marker> -->
+  <agm-marker *ngFor="let marker of markers" [latitude]="marker.placeResult.geometry.location.lat()"
+    [longitude]="marker.placeResult.geometry.location.lng()">
+    <agm-info-window>
+      <div [innerHTML]="marker.placeResult.name"></div>
+    </agm-info-window>
+  </agm-marker>
+</agm-map>
+<!-- </div> -->

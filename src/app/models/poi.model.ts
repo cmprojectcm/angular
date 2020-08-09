@@ -13,7 +13,6 @@ export class Poi {
 
   // setting latitude
   setLat(latitude) {
-    console.log('setting lat');
     this.lat = latitude;
   }
 

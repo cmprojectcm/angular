@@ -10,6 +10,7 @@ import {
 import { Poi } from '../models/poi.model';
 import { CategoryType } from '../models/categoryType.model';
 import { MapsAPILoader } from '@agm/core';
+import { AgmMap } from '@agm/core';
 // import {} from 'googlemaps';
 
 @Component({
@@ -22,22 +23,26 @@ export class MapComponent implements OnInit {
   public searchElementRef: ElementRef;
   public searchControl: FormControl;
 
+  @ViewChild('mapElement')
+  public mapElementRef: any;
+
   private poi = new Poi();
   private category = new CategoryType();
   private countries = new CountriesList();
 
-  mapComponent = 'mappppp';
   lat: number;
   lng: number;
   selectedCategoryType: string;
   selectedCountry: string;
+  markers = [];
+  MARKER_PATH =
+    'https://developers.google.com/maps/documentation/javascript/images/marker_green';
 
-  categoryTypes: string[] = ['establishment', 'geocode'];
+  categoryTypes: object[] = this.category.getCategoryTypes();
   countryList: object[] = this.countries.getCountries();
-  // typeCollection: string[] = null;
 
-  //Local Variable defined
-  formattedaddress: string;
+  //Local letiable defined
+  // formattedaddress: string;
 
   constructor(private mapsAPILoader: MapsAPILoader, private ngZone: NgZone) {}
 
@@ -50,14 +55,7 @@ export class MapComponent implements OnInit {
     },
   };
 
-  public test(tes) {
-    const result = document.getElementsByClassName('pac-item');
-    console.log('testinggggg', tes);
-    console.log('result', result);
-  }
-
   public handleSelectCategory(value: any) {
-    console.log('selecting');
     this.category.setSelectedCategoryType(value);
     // this.selectedCategoryType = this.category.getSelectedCategoryType();
     this.ngOnInit();
@@ -68,40 +66,34 @@ export class MapComponent implements OnInit {
     this.ngOnInit();
   }
 
-  public handleAddressChange(address: any) {
-    //setting address from API to local variable
-    this.formattedaddress = address.formatted_address;
-    this.poi.setLat(address.geometry.location.lat());
-    this.poi.setLng(address.geometry.location.lng());
-    this.lat = this.poi.getLat();
-    this.lng = this.poi.getLng();
-  }
-
   ngOnInit(): void {
-    // window.navigator.geolocation.getCurrentPosition((pos) => {
-    //   this.poi.setLat(pos.coords.latitude);
-    //   this.poi.setLng(pos.coords.longitude);
-    // });
-    console.log('this.countries.getCountries()', this.countries.countries);
-    this.searchControl = new FormControl();
+    // this.searchControl = new FormControl();
+    this.getCurrentLoc();
 
     this.mapsAPILoader.load().then(() => {
       const autocomplete = new google.maps.places.Autocomplete(
         this.searchElementRef.nativeElement,
         {
-          types: [this.category.getSelectedCategoryType()],
+          // types: [this.category.getSelectedCategoryType()],
           componentRestrictions: {
             country: [this.countries.getSelectedCountry()],
           },
         }
       );
+
       autocomplete.addListener('place_changed', () => {
         this.ngZone.run(() => {
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
+
+          const places = new google.maps.places.PlacesService(
+            document.createElement('div')
+          );
+
+          // console.log('places', places);
+
           if (place.geometry === undefined || place.geometry === null) {
             return;
           }
-
           const latlng = {
             lat: place.geometry.location.lat(),
             lng: place.geometry.location.lng(),
@@ -109,31 +101,96 @@ export class MapComponent implements OnInit {
 
           this.poi.setLat(latlng.lat);
           this.poi.setLng(latlng.lng);
+
           this.lat = this.poi.getLat();
           this.lng = this.poi.getLng();
 
-          this.searchControl.reset();
-        });
-      });
+          // Search for hotels in the selected city, within the viewport of the map.
+          // const search = () => {
 
-      autocomplete.addListener('place_changed', () => {
-        this.ngZone.run(() => {
-          const place: google.maps.places.PlaceResult = autocomplete.getPlace();
-          if (place.geometry === undefined || place.geometry === null) {
-            return;
-          }
+          places.nearbySearch(
+            {
+              location: { lat: this.poi.getLat(), lng: this.poi.getLng() },
+              radius: 10000,
+              types: [this.category.getSelectedCategoryType()],
+            },
+            (results, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK) {
+                // clearResults();
+                // clearMarkers();
 
-          const latlng = {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng(),
-          };
+                // Create a marker for each hotel found, and
+                // assign a letter of the alphabetic to each marker icon.
+                for (let i = 0; i < results.length; i++) {
+                  let markerLetter = String.fromCharCode(
+                    'A'.charCodeAt(0) + (i % 26)
+                  );
+                  let markerIcon = this.MARKER_PATH + markerLetter + '.png';
+                  // Use marker animation to drop the icons incrementally on the map.
+                  this.markers[i] = new google.maps.Marker({
+                    position: results[i].geometry.location,
+                    animation: google.maps.Animation.DROP,
+                    icon: markerIcon,
+                  });
+                  // If the user clicks a hotel marker, show the details of that hotel
+                  // in an info window.
+                  this.markers[i].placeResult = results[i];
+                  // console.log('results', results);
+                  // console.log('markers', this.markers);
+                  results.map((item) =>
+                    console.log('item', item.geometry.location.lat())
+                  );
+                  // google.maps.event.addListener(
+                  //   this.markers[i],
+                  //   'click',
+                  //   showInfoWindow
+                  // );
 
-          this.poi.setLat(latlng.lat);
-          this.poi.setLng(latlng.lng);
-          this.lat = this.poi.getLat();
-          this.lng = this.poi.getLng();
+                  // setTimeout(dropMarker(i), i * 100);
+                  // addResult(results[i], i);
+                }
+              }
+            }
+          );
 
-          this.searchControl.reset();
+          // };
+          // this.searchControl.reset();
+
+          // const dropMarker = (i) => {
+          //   console.log('markers', this.markers);
+          //   return () => {
+          //     this.markers[i].setMap(this.mapElementRef._elem.nativeElement);
+          //   };
+          // };
+
+          // const addResult = (result, i) => {
+          //   console.log('result', result);
+          //   console.log('i', i);
+          //   // let results = document.getElementById('results');
+          //   let markerLetter = String.fromCharCode(
+          //     'A'.charCodeAt(0) + (i % 26)
+          //   );
+          //   let markerIcon = this.MARKER_PATH + markerLetter + '.png';
+
+          //   let tr = document.createElement('tr');
+          //   tr.style.backgroundColor = i % 2 === 0 ? '#F0F0F0' : '#FFFFFF';
+          //   tr.onclick = () => {
+          //     google.maps.event.trigger(this.markers[i], 'click');
+          //   };
+
+          //   let iconTd = document.createElement('td');
+          //   let nameTd = document.createElement('td');
+          //   let icon = document.createElement('img');
+          //   icon.src = markerIcon;
+          //   icon.setAttribute('class', 'placeIcon');
+          //   icon.setAttribute('className', 'placeIcon');
+          //   let name = document.createTextNode(result.name);
+          //   iconTd.appendChild(icon);
+          //   nameTd.appendChild(name);
+          //   tr.appendChild(iconTd);
+          //   tr.appendChild(nameTd);
+          //   // results.appendChild(tr);
+          // };
         });
       });
     });

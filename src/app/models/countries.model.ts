@@ -1,7 +1,7 @@
 export class CountriesList {
   private selectedCountry: string;
 
-     countries = [
+  countries = [
     {
       name: 'Afghanistan',
       code: 'AF',
@@ -247,7 +247,7 @@ export class CountriesList {
     { name: 'Western Sahara', code: 'EH' },
     { name: 'Yemen', code: 'YE' },
     { name: 'Zambia', code: 'ZM' },
-    { name: 'Zimbabwe', code: 'ZW' }
+    { name: 'Zimbabwe', code: 'ZW' },
   ];
 
   getCountries() {
