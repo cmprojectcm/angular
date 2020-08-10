@@ -10,9 +10,10 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { GooglePlaceModule } from 'ngx-google-places-autocomplete';
 // import {NgxGooglePlacesAutocompleteModule} from "@codious/ngx-google-places-autocomplete";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InfoComponentComponent } from './info-component/info-component.component';
 
 @NgModule({
-  declarations: [AppComponent, MapComponent],
+  declarations: [AppComponent, MapComponent, InfoComponentComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

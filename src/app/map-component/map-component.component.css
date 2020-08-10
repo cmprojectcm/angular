@@ -1,3 +1,14 @@
+/* .mainContainer{
+  display:flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width:100%;
+}
+
+.mainContainer>* {
+  flex: 1 1 100px;
+} */
+
 .infoContainer {
 
   display: flex;
@@ -11,6 +22,28 @@
   flex: 1;
 
 }
+
+.resultsContainer{
+/* position: absolute; */
+width: 200px;
+height: 470px;
+left: 442px;
+background-color:red;
+/* background-color:red; */
+/* overflow: auto;
+left: 442px;
+top: 0px;
+cursor: pointer;
+overflow-x: hidden; */
+}
+
+.resultsTable {
+  border-collapse: collapse;
+  background-color: red;
+  width: 240px;
+  /* height:100px; */
+}
+
 
 #mapContainer {
   height: 800px;

@@ -35,6 +35,7 @@ export class MapComponent implements OnInit {
   selectedCategoryType: string;
   selectedCountry: string;
   markers = [];
+  photos = [];
   MARKER_PATH =
     'https://developers.google.com/maps/documentation/javascript/images/marker_green';
 
@@ -55,15 +56,23 @@ export class MapComponent implements OnInit {
     },
   };
 
-  public handleSelectCategory(value: any) {
+  public handleSelectCategory(value: string) {
+    console.log('value', value)
     this.category.setSelectedCategoryType(value);
     // this.selectedCategoryType = this.category.getSelectedCategoryType();
     this.ngOnInit();
   }
 
-  public handleSelectCountry(value: any) {
+  public handleSelectCountry(value: string) {
+    console.log('value 2', value)
     this.countries.setSelectedCategoryType(value);
     this.ngOnInit();
+  }
+
+  public resultHover(value: any, name:any) {
+    // console.log('value', value)
+    // console.log('name', name)
+    // google.maps.event.trigger(markers[i], 'click');
   }
 
   ngOnInit(): void {
@@ -81,7 +90,7 @@ export class MapComponent implements OnInit {
         }
       );
 
-      autocomplete.addListener('place_changed', () => {
+      autocomplete.addListener('place_changed',() => {
         this.ngZone.run(() => {
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
@@ -135,11 +144,15 @@ export class MapComponent implements OnInit {
                   // If the user clicks a hotel marker, show the details of that hotel
                   // in an info window.
                   this.markers[i].placeResult = results[i];
-                  // console.log('results', results);
-                  // console.log('markers', this.markers);
-                  results.map((item) =>
-                    console.log('item', item.geometry.location.lat())
-                  );
+                  this.photos = results[i].photos;
+                  // console.log('results', results[i]);
+
+                  // console.log('photos', this.photos);
+
+                  // results[i].photos.map((photo) => photo.getUrl({ maxHeight: 200, maxWidth: 200 }) ) ;
+
+                  console.log('markers', this.markers)
+
                   // google.maps.event.addListener(
                   //   this.markers[i],
                   //   'click',
