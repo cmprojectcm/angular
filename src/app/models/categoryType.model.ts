@@ -3,8 +3,8 @@ interface ICategoryTypes {
   value: string;
 }
 export class CategoryType {
-  private selectedCategoryType: string;
 
+  private selectedCategoryType: string;
   private categoryTypes: ICategoryTypes[] = [
     { id: 'establishment', value: 'Establishment' },
     { id: 'geocode', value: 'Geocode' },
@@ -12,6 +12,7 @@ export class CategoryType {
     { id: 'aquarium', value: 'Aquariums' },
   ];
 
+  //getters
   getCategoryTypes() {
     return this.categoryTypes;
   }
@@ -20,6 +21,7 @@ export class CategoryType {
     return this.selectedCategoryType;
   }
 
+  //setters
   setSelectedCategoryType(type) {
     this.selectedCategoryType = type;
   }

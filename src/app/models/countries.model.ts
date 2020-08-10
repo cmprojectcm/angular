@@ -1,6 +1,7 @@
 export class CountriesList {
   private selectedCountry: string;
 
+  //countries array
   countries = [
     {
       name: 'Afghanistan',
@@ -250,6 +251,7 @@ export class CountriesList {
     { name: 'Zimbabwe', code: 'ZW' },
   ];
 
+  //getters
   getCountries() {
     return this.countries;
   }
@@ -258,7 +260,9 @@ export class CountriesList {
     return this.selectedCountry;
   }
 
+  //setters
   setSelectedCategoryType(country) {
+    console.log('selecgted Country', country)
     this.selectedCountry = country;
   }
 }

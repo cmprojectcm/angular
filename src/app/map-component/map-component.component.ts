@@ -10,8 +10,6 @@ import {
 import { Poi } from '../models/poi.model';
 import { CategoryType } from '../models/categoryType.model';
 import { MapsAPILoader } from '@agm/core';
-import { AgmMap } from '@agm/core';
-// import {} from 'googlemaps';
 
 @Component({
   selector: 'app-map-component',
@@ -19,116 +17,141 @@ import { AgmMap } from '@agm/core';
   styleUrls: ['./map-component.component.css'],
 })
 export class MapComponent implements OnInit {
+
+  // gets the search box on dom
   @ViewChild('search')
   public searchElementRef: ElementRef;
   public searchControl: FormControl;
 
-  @ViewChild('mapElement')
-  public mapElementRef: any;
+  // private variables
 
+  // instances
   private poi = new Poi();
   private category = new CategoryType();
   private countries = new CountriesList();
 
+  private MARKER_PATH:string =
+    'https://developers.google.com/maps/documentation/javascript/images/marker_green';
+
+  // public variables
   lat: number;
   lng: number;
   selectedCategoryType: string;
   selectedCountry: string;
   markers = [];
   photos = [];
-  MARKER_PATH =
-    'https://developers.google.com/maps/documentation/javascript/images/marker_green';
+  radiusValues = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 10000];
+  selectedRadiusValue: number;
 
   categoryTypes: object[] = this.category.getCategoryTypes();
   countryList: object[] = this.countries.getCountries();
 
-  //Local letiable defined
-  // formattedaddress: string;
 
   constructor(private mapsAPILoader: MapsAPILoader, private ngZone: NgZone) {}
 
-  options = {
-    types: [this.category.getSelectedCategoryType()],
-    // location: '33.8670522,151.1957362',
-    // radius: '500',
-    componentRestrictions: {
-      // country: ['AU'],
-    },
-  };
 
+  //handling category input change
   public handleSelectCategory(value: string) {
-    console.log('value', value)
     this.category.setSelectedCategoryType(value);
-    // this.selectedCategoryType = this.category.getSelectedCategoryType();
     this.ngOnInit();
   }
 
+  //handling country input change
   public handleSelectCountry(value: string) {
-    console.log('value 2', value)
     this.countries.setSelectedCategoryType(value);
     this.ngOnInit();
   }
 
-  public resultHover(value: any, name:any) {
-    // console.log('value', value)
-    // console.log('name', name)
-    // google.maps.event.trigger(markers[i], 'click');
+  //handling radius input change
+  public handleSelectRadius(radius) {
+    this.selectedRadiusValue = radius;
+    this.ngOnInit();
   }
 
+  mapReady(value) {
+    // console.log('value:', value)
+  }
+
+  resultHover(event, marker) {
+
+    this.poi.setLat(marker.geometry.location.lat());
+    this.poi.setLng(marker.geometry.location.lng());
+    this.poi.getLat()
+    this.poi.getLng()
+    this.ngOnInit()
+  }
+
+  //handling search input disable
+  public handleSearchInputDisable() {
+    let isDisabled: boolean;
+    if (this.selectedRadiusValue === undefined
+      || this.selectedCategoryType === undefined
+      || this.selectedCountry === undefined) {
+      isDisabled = true
+    }
+    return isDisabled;
+  }
+
+  // component initialization
   ngOnInit(): void {
-    // this.searchControl = new FormControl();
+
     this.getCurrentLoc();
 
     this.mapsAPILoader.load().then(() => {
       const autocomplete = new google.maps.places.Autocomplete(
+        //specify the search input element
         this.searchElementRef.nativeElement,
+        //parsing info used for the prediction returned from autocomplete places
         {
-          // types: [this.category.getSelectedCategoryType()],
           componentRestrictions: {
             country: [this.countries.getSelectedCountry()],
           },
         }
       );
 
+      //after user selects a location from the searchbox google places autocomplete
       autocomplete.addListener('place_changed',() => {
         this.ngZone.run(() => {
+
+          //get the selected place
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
+          //getting the places service in order to be able to uses its features
           const places = new google.maps.places.PlacesService(
             document.createElement('div')
           );
 
-          // console.log('places', places);
-
+          //return if there is no location returned
           if (place.geometry === undefined || place.geometry === null) {
             return;
           }
+
           const latlng = {
             lat: place.geometry.location.lat(),
             lng: place.geometry.location.lng(),
           };
 
+          //setting lat and lng
           this.poi.setLat(latlng.lat);
           this.poi.setLng(latlng.lng);
 
+          //getting lat and lng
           this.lat = this.poi.getLat();
           this.lng = this.poi.getLng();
 
-          // Search for hotels in the selected city, within the viewport of the map.
-          // const search = () => {
-
+          //searching for any item based on category type and radius given by user
           places.nearbySearch(
+            //passing arguments in order to get results based on them
             {
               location: { lat: this.poi.getLat(), lng: this.poi.getLng() },
-              radius: 10000,
+              radius: this.selectedRadiusValue,
               types: [this.category.getSelectedCategoryType()],
             },
+            //callback function to manipulate the response results from google palces api
             (results, status) => {
               if (status === google.maps.places.PlacesServiceStatus.OK) {
-                // clearResults();
-                // clearMarkers();
 
-                // Create a marker for each hotel found, and
+                // Create a marker for each category type found, and
                 // assign a letter of the alphabetic to each marker icon.
                 for (let i = 0; i < results.length; i++) {
                   let markerLetter = String.fromCharCode(
@@ -141,74 +164,21 @@ export class MapComponent implements OnInit {
                     animation: google.maps.Animation.DROP,
                     icon: markerIcon,
                   });
+
                   // If the user clicks a hotel marker, show the details of that hotel
                   // in an info window.
                   this.markers[i].placeResult = results[i];
                   this.photos = results[i].photos;
-                  // console.log('results', results[i]);
-
-                  // console.log('photos', this.photos);
-
-                  // results[i].photos.map((photo) => photo.getUrl({ maxHeight: 200, maxWidth: 200 }) ) ;
-
-                  console.log('markers', this.markers)
-
-                  // google.maps.event.addListener(
-                  //   this.markers[i],
-                  //   'click',
-                  //   showInfoWindow
-                  // );
-
-                  // setTimeout(dropMarker(i), i * 100);
-                  // addResult(results[i], i);
                 }
               }
             }
           );
-
-          // };
-          // this.searchControl.reset();
-
-          // const dropMarker = (i) => {
-          //   console.log('markers', this.markers);
-          //   return () => {
-          //     this.markers[i].setMap(this.mapElementRef._elem.nativeElement);
-          //   };
-          // };
-
-          // const addResult = (result, i) => {
-          //   console.log('result', result);
-          //   console.log('i', i);
-          //   // let results = document.getElementById('results');
-          //   let markerLetter = String.fromCharCode(
-          //     'A'.charCodeAt(0) + (i % 26)
-          //   );
-          //   let markerIcon = this.MARKER_PATH + markerLetter + '.png';
-
-          //   let tr = document.createElement('tr');
-          //   tr.style.backgroundColor = i % 2 === 0 ? '#F0F0F0' : '#FFFFFF';
-          //   tr.onclick = () => {
-          //     google.maps.event.trigger(this.markers[i], 'click');
-          //   };
-
-          //   let iconTd = document.createElement('td');
-          //   let nameTd = document.createElement('td');
-          //   let icon = document.createElement('img');
-          //   icon.src = markerIcon;
-          //   icon.setAttribute('class', 'placeIcon');
-          //   icon.setAttribute('className', 'placeIcon');
-          //   let name = document.createTextNode(result.name);
-          //   iconTd.appendChild(icon);
-          //   nameTd.appendChild(name);
-          //   tr.appendChild(iconTd);
-          //   tr.appendChild(nameTd);
-          //   // results.appendChild(tr);
-          // };
         });
       });
     });
   }
 
+  //gets the location of the device
   private getCurrentLoc() {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition((pos) => {

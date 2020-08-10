@@ -6,22 +6,19 @@ export class Poi {
 
   //  autocomplete = new google.maps.places.Autocomplete()
 
-  // getting latitude
+  // getters
   getLat() {
     return this.lat;
   }
 
-  // setting latitude
+  getLng() {
+      return this.lng;
+  }
+
+  // setters
   setLat(latitude) {
     this.lat = latitude;
   }
-
-  // getting longitude
-  getLng() {
-    return this.lng;
-  }
-
-  // setting longitude
   setLng(longitude) {
     this.lng = longitude;
   }

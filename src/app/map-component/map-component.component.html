@@ -1,95 +1,107 @@
+<h1>Places Finder App</h1>
+
 <div class="infoContainer">
+
   <div class="selectCategory">
+
     <label for="place">Category</label>
-    <select [(ngModel)]="selectedCategoryType" (ngModelChange)="handleSelectCategory($event)">
+
+    <select [(ngModel)]="selectedCategoryType" (ngModelChange)="handleSelectCategory($event)" required>
       <option [value]="opt.id" *ngFor="let opt of categoryTypes">
         {{opt.value}}
       </option>
     </select>
+
+    <label class="description">
+      Please choose a category of places to get
+    </label>
+
   </div>
 
   <div class="selectCountry">
+
     <label for="place">Country</label>
+
     <select [(ngModel)]="selectedCountry" (ngModelChange)="handleSelectCountry($event)">
       <option [value]="opt.code" *ngFor="let opt of countryList">
         {{opt.name}}
       </option>
     </select>
+
+    <label class="description">
+        Please choose a country to get limited results on Search
+      </label>
+
+  </div>
+
+  <div class="radius">
+
+    <label for="place">Radius (meters)</label>
+
+    <select [(ngModel)]="selectedRadiusValue"  (ngModelChange)="handleSelectRadius($event)">
+      <option [value]="radius" *ngFor="let radius of radiusValues">
+        {{radius}}
+      </option>
+    </select>
+
+    <label class="description">
+        Please choose a radius around the searched location
+    </label>
+
   </div>
 
   <div class="autocompleteInput">
 
-    <!-- 
-    <input ngx-google-places-autocomplete [options]="options" (keyup)="test($event)"
-      (onAddressChange)="handleAddressChange($event)" /> -->
-    <!-- (keyup)="onKey($event)"> -->
     <div class="form-group">
+
       <label for="place">Search</label>
-      <!-- <div class="searchInput"> -->
-      <input type="text" id="place" #search [formControl]="searchControl" autocomplete="off" autocapitalize="off"
-        spellcheck="false">
-      <!-- </div> -->
+
+      <input  type="text" id="place" #search [formControl]="searchControl" autocomplete="off" autocapitalize="off"
+        spellcheck="false" 
+        [attr.disabled]="handleSearchInputDisable()"
+        >
+
     </div>
 
   </div>
 
 </div>
 
-<!-- <div id="mapContainer"> -->
-<agm-map #mapElement id="agmID" [latitude]="lat" [longitude]="lng">
-  <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
 
-  <!-- <agm-marker *ngFor="let marker of markers" [latitude]="marker.placeResult.geometry.location.lat()"
-    [longitude]="marker.placeResult.geometry.location.lng()">
-  </agm-marker> -->
-  <agm-marker *ngFor="let marker of markers" [latitude]="marker.placeResult.geometry.location.lat()"
-    [longitude]="marker.placeResult.geometry.location.lng()"
-    [iconUrl]="marker.icon"
-    
-    >
-    <agm-info-window>
-      <div [innerHTML]="marker.placeResult.name"></div>
+<div class="bodyContainer">
+
+  <!--Results of places-->
+    <div class="resultsContainer">
+        <table class="resultsTable">
+          <tbody id="results" *ngFor="let marker of markers" >
+            <td (mouseover)=resultHover($event,marker.placeResult)>
+              {{marker.placeResult.name}}
+            </td>
+          </tbody>
+        </table>
+      </div>
+
+  <agm-map #mapElement id="agmID" [latitude]="lat" [longitude]="lng"
+  (mapReady)="mapReady($event)"
+  [zoom]="8"
+  >
+
+    <!-- main location marker -->
+    <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+
+    <!--places marker-->
+    <agm-marker *ngFor="let marker of markers" [latitude]="marker.placeResult.geometry.location.lat()"
+      [longitude]="marker.placeResult.geometry.location.lng()"
+      [iconUrl]="marker.icon"
+      
+      >
+      <!--window Info when on click places marker -->
       <agm-info-window>
-        <img *ngFor="let photo of photos" src="photo.getUrl({ maxHeight: 200, maxWidth: 200 })"/>
+        <div [innerHTML]="marker.placeResult.name"></div>
+          <img *ngFor="let photo of photos" src="photo.getUrl({ maxHeight: 200, maxWidth: 200 })"/>
       </agm-info-window>
-    </agm-info-window>
-  </agm-marker>
-</agm-map>
-<!-- <img *ngFor="let photo of photos" src="https://lh3.googleusercontent.com/p/AF1QipOKSYzxdDCT8BTDishOWIG6tEVxtZjS1wDss51B=s1600-w200-h200"/> -->
 
-<div class="resultsContainer">
-  <table class="resultsTable">
-    <tbody id="results" *ngFor="let marker of markers" >
-      <!-- {{marker.placeResult.name}} -->
-      <td [innerHTML]="marker.placeResult.name" (mouseover)=resultHover($event,marker.placeResult)></td>
-    </tbody>
-  </table>
+    </agm-marker>
+
+  </agm-map>
 </div>
-
-<!-- <div id="nearby-places">
-  <table>
-    <tr id="iw-url-row" class="iw_table_row">
-      <td id="iw-icon" class="iw_table_icon"></td>
-      <td id="iw-url"></td>
-    </tr>
-    <tr id="iw-address-row" class="iw_table_row">
-      <td class="iw_attribute_name">Address:</td>
-      <td id="iw-address"></td>
-    </tr>
-    <tr id="iw-phone-row" class="iw_table_row">
-      <td class="iw_attribute_name">Telephone:</td>
-      <td id="iw-phone"></td>
-    </tr>
-    <tr id="iw-rating-row" class="iw_table_row">
-      <td class="iw_attribute_name">Rating:</td>
-      <td id="iw-rating"></td>
-    </tr>
-    <tr id="iw-website-row" class="iw_table_row">
-      <td class="iw_attribute_name">Website:</td>
-      <td id="iw-website"></td>
-    </tr>
-  </table>
-</div> -->
-
-
-<!-- </div> -->
